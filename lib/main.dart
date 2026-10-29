@@ -17,7 +17,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      // Panggil ..loadCourses() saat state pertama kali dibuat
       create: (_) => CourseState()..loadCourses(),
       child: MaterialApp(
         title: 'Course Explorer v2',

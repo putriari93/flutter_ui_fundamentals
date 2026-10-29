@@ -18,6 +18,7 @@ class CourseState extends ChangeNotifier {
   CourseState([CourseRepository? repository])
       : _repository = repository ?? CourseRepository(CourseApiService());
 
+  // Getters
   List<Course> get courses => _courses;
   List<Course> get favorites => _favorites;
   List<Course> get favoriteCourses => _favorites;
@@ -26,6 +27,7 @@ class CourseState extends ChangeNotifier {
   String? get error => _error;
   String? get errorMessage => _error;
 
+  // Fetch Courses dari API
   Future<void> loadCourses() async {
     _isLoading = true;
     _error = null;
@@ -41,6 +43,26 @@ class CourseState extends ChangeNotifier {
     }
   }
 
+  // Tambah Course Baru (HTTP POST)
+  Future<bool> addCourse(Course course) async {
+    _isSaving = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _repository.createCourse(course);
+      await loadCourses(); // Refresh daftar course dari server setelah add
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  // Toggle Favorit
   bool isFavorite(dynamic item) {
     if (item is Course) {
       return _favorites.contains(item);
@@ -72,16 +94,7 @@ class CourseState extends ChangeNotifier {
     }
   }
 
-  Future<bool> addCourse(Course course) async {
-    _isSaving = true;
-    notifyListeners();
-    await Future.delayed(const Duration(milliseconds: 300));
-    _courses.add(course);
-    _isSaving = false;
-    notifyListeners();
-    return true;
-  }
-
+  // Edit & Hapus Lokal
   Future<bool> editCourse(String code, Course updatedCourse) async {
     _isSaving = true;
     notifyListeners();

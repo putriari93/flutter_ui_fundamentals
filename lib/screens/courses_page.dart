@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/course_state.dart';
 import '../widgets/error_view.dart';
+import 'add_course_page.dart';
 
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
@@ -13,6 +14,22 @@ class CoursesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = context.watch<CourseState>();
 
+    return Scaffold(
+      appBar: AppBar(title: const Text('Daftar Course')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const AddCoursePage()),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+      body: _buildBody(context, state),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, CourseState state) {
     // 1. Loading State
     if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -36,15 +53,23 @@ class CoursesPage extends StatelessWidget {
       );
     }
 
-    // 4. Success State (Tampilkan List)
+    // 4. Success State
     return ListView.builder(
       itemCount: state.courses.length,
       itemBuilder: (context, index) {
         final course = state.courses[index];
+        final isFav = state.isFavorite(course);
+
         return ListTile(
           title: Text(course.title),
           subtitle: Text('Code: ${course.code} | Status: ${course.status}'),
-          trailing: Text('${course.credits} SKS'),
+          trailing: IconButton(
+            icon: Icon(
+              isFav ? Icons.favorite : Icons.favorite_border,
+              color: isFav ? Colors.red : null,
+            ),
+            onPressed: () => state.toggleFavorite(course),
+          ),
         );
       },
     );
