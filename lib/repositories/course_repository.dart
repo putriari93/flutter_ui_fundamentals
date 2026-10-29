@@ -16,4 +16,9 @@ class CourseRepository {
   Future<Course> createCourse(Course course) async {
     return await apiService.createCourse(course);
   }
+
+  // TAMBAHAN METHOD UPDATE
+  Future<Course> updateCourse(int id, Course course) async {
+    return await apiService.updateCourse(id, course);
+  }
 }

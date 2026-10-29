@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../models/course_state.dart';
 import '../widgets/error_view.dart';
 import 'add_course_page.dart';
+import 'edit_course_page.dart';
 
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
@@ -30,12 +31,10 @@ class CoursesPage extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, CourseState state) {
-    // 1. Loading State
     if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // 2. Error State
     if (state.error != null) {
       return ErrorView(
         message: state.error!,
@@ -43,7 +42,6 @@ class CoursesPage extends StatelessWidget {
       );
     }
 
-    // 3. Empty State
     if (state.courses.isEmpty) {
       return const Center(
         child: Text(
@@ -53,7 +51,6 @@ class CoursesPage extends StatelessWidget {
       );
     }
 
-    // 4. Success State
     return ListView.builder(
       itemCount: state.courses.length,
       itemBuilder: (context, index) {
@@ -63,12 +60,28 @@ class CoursesPage extends StatelessWidget {
         return ListTile(
           title: Text(course.title),
           subtitle: Text('Code: ${course.code} | Status: ${course.status}'),
-          trailing: IconButton(
-            icon: Icon(
-              isFav ? Icons.favorite : Icons.favorite_border,
-              color: isFav ? Colors.red : null,
-            ),
-            onPressed: () => state.toggleFavorite(course),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit, color: Colors.blue),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditCoursePage(course: course),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  isFav ? Icons.favorite : Icons.favorite_border,
+                  color: isFav ? Colors.red : null,
+                ),
+                onPressed: () => state.toggleFavorite(course),
+              ),
+            ],
           ),
         );
       },

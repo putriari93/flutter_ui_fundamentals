@@ -1,5 +1,6 @@
 // Nama: Putri Ari Laksmi
-// NIM: 24150511091
+// NIM: 2415051091
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/course.dart';
@@ -19,7 +20,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
   late TextEditingController _codeController;
   late TextEditingController _titleController;
   late TextEditingController _creditsController;
-  late String _status;
+  late String _selectedStatus;
 
   @override
   void initState() {
@@ -27,7 +28,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
     _codeController = TextEditingController(text: widget.course.code);
     _titleController = TextEditingController(text: widget.course.title);
     _creditsController = TextEditingController(text: widget.course.credits.toString());
-    _status = widget.course.status;
+    _selectedStatus = widget.course.status;
   }
 
   @override
@@ -42,14 +43,15 @@ class _EditCoursePageState extends State<EditCoursePage> {
     if (!_formKey.currentState!.validate()) return;
 
     final updatedCourse = Course(
-      code: _codeController.text,
-      title: _titleController.text,
-      credits: int.parse(_creditsController.text),
-      status: _status,
+      id: widget.course.id,
+      code: widget.course.code,
+      title: _titleController.text.trim(),
+      credits: int.parse(_creditsController.text.trim()),
+      status: _selectedStatus,
     );
 
-    final state = context.read<CourseState>();
-    final success = await state.editCourse(widget.course.code, updatedCourse);
+    final targetId = widget.course.id ?? 1;
+    final success = await context.read<CourseState>().editCourse(targetId, updatedCourse);
 
     if (!mounted) return;
 
@@ -59,11 +61,9 @@ class _EditCoursePageState extends State<EditCoursePage> {
       );
       Navigator.pop(context);
     } else {
+      final errorMsg = context.read<CourseState>().error ?? 'Gagal memperbarui course';
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Gagal memperbarui course'),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
       );
     }
   }
@@ -82,34 +82,32 @@ class _EditCoursePageState extends State<EditCoursePage> {
             children: [
               TextFormField(
                 controller: _codeController,
-                readOnly: true, // Field code dibuat read-only
+                readOnly: true,
                 decoration: const InputDecoration(
                   labelText: 'Kode Course (Read Only)',
-                  fillColor: Color(0xFFF0F0F0),
                   filled: true,
                 ),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Nama Course'),
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Nama wajib diisi' : null,
+                decoration: const InputDecoration(labelText: 'Judul Course'),
+                validator: (val) => val == null || val.trim().isEmpty ? 'Judul wajib diisi' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _creditsController,
-                decoration: const InputDecoration(labelText: 'SKS'),
+                decoration: const InputDecoration(labelText: 'SKS (Credits)'),
                 keyboardType: TextInputType.number,
                 validator: (val) {
-                  if (val == null || val.isEmpty) return 'SKS wajib diisi';
-                  if (int.tryParse(val) == null) return 'SKS harus berupa angka';
+                  if (val == null || val.trim().isEmpty) return 'SKS wajib diisi';
+                  if (int.tryParse(val.trim()) == null) return 'SKS harus berupa angka';
                   return null;
                 },
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                initialValue: _status,
+                value: _selectedStatus,
                 decoration: const InputDecoration(labelText: 'Status'),
                 items: const [
                   DropdownMenuItem(value: 'planned', child: Text('Planned')),
@@ -117,7 +115,7 @@ class _EditCoursePageState extends State<EditCoursePage> {
                   DropdownMenuItem(value: 'done', child: Text('Done')),
                 ],
                 onChanged: (val) {
-                  if (val != null) setState(() => _status = val);
+                  if (val != null) setState(() => _selectedStatus = val);
                 },
               ),
               const SizedBox(height: 24),
