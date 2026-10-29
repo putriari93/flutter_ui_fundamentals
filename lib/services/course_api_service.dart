@@ -4,12 +4,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/course.dart';
+import 'course_data_source.dart';
 
-class CourseApiService {
+class CourseApiService implements CourseDataSource {
   final String baseUrl;
 
   CourseApiService([this.baseUrl = 'https://jsonplaceholder.typicode.com']);
 
+  @override
   Future<List<Course>> getCourses() async {
     final response = await http.get(Uri.parse('$baseUrl/posts'));
     if (response.statusCode != 200) {
@@ -19,6 +21,7 @@ class CourseApiService {
     return data.map((e) => Course.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  @override
   Future<Course> createCourse(Course course) async {
     final response = await http.post(
       Uri.parse('$baseUrl/posts'),
@@ -31,6 +34,7 @@ class CourseApiService {
     throw Exception('Gagal membuat course: Status ${response.statusCode}');
   }
 
+  @override
   Future<Course> updateCourse(int id, Course course) async {
     final response = await http.put(
       Uri.parse('$baseUrl/posts/$id'),
@@ -43,12 +47,11 @@ class CourseApiService {
     throw Exception('Gagal memperbarui course: Status ${response.statusCode}');
   }
 
-  // METHOD DELETE (TAHAP 8)
+  @override
   Future<void> deleteCourse(int id) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/posts/$id'),
     );
-
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('Gagal menghapus course: Status ${response.statusCode}');
     }

@@ -2,27 +2,21 @@
 // NIM: 2415051091
 
 import '../models/course.dart';
-import '../services/course_api_service.dart';
+import '../services/course_data_source.dart';
 
 class CourseRepository {
-  final CourseApiService apiService;
+  final CourseDataSource dataSource;
 
-  CourseRepository(this.apiService);
+  CourseRepository(this.dataSource);
 
-  Future<List<Course>> getCourses() async {
-    return await apiService.getCourses();
-  }
+  Future<List<Course>> getCourses() => dataSource.getCourses();
 
-  Future<Course> createCourse(Course course) async {
-    return await apiService.createCourse(course);
-  }
+  Future<Course> createCourse(Course course) =>
+      dataSource.createCourse(course);
 
-  Future<Course> updateCourse(int id, Course course) async {
-    return await apiService.updateCourse(id, course);
-  }
+  Future<Course> updateCourse(int id, Course course) =>
+      dataSource.updateCourse(id, course);
 
-  // METHOD DELETE (TAHAP 8)
-  Future<void> deleteCourse(int id) async {
-    await apiService.deleteCourse(id);
-  }
+  Future<void> deleteCourse(int id) =>
+      dataSource.deleteCourse(id);
 }
