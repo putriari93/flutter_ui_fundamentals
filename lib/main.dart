@@ -13,11 +13,10 @@ import 'package:flutter_ui_fundamentals/widgets/responsive_shell.dart'; // Impor
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Supabase.initialize(
-    url: SupabaseConfig.url,
-    publishableKey: SupabaseConfig.anonKey,
-  );
+  
+  // Panggil fungsi API service
+  final apiService = CourseApiService();
+  await apiService.fetchCourses();
 
   runApp(const MyApp());
 }

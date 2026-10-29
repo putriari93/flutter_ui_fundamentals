@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class CourseApiService {
   // 1. Konstanta apiUrl
-  static const String apiUrl = 'https://jsonplaceholder.typicode.com/posts_salah';
+  static const String apiUrl = 'https://jsonplaceholder.typicode.com/posts';
 
   // 2. Function asynchronous HTTP GET
   Future<List<dynamic>> fetchCourses() async {
