@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/course.dart';
 import '../models/course_state.dart';
 import '../widgets/error_view.dart';
 import 'add_course_page.dart';
@@ -10,6 +11,44 @@ import 'edit_course_page.dart';
 
 class CoursesPage extends StatelessWidget {
   const CoursesPage({super.key});
+
+  void _showDeleteDialog(BuildContext context, Course course) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Konfirmasi Hapus'),
+        content: Text('Apakah Anda yakin ingin menghapus course "${course.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+
+              final success = await context.read<CourseState>().removeCourse(course);
+
+              if (!context.mounted) return;
+
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Course berhasil dihapus!')),
+                );
+              } else {
+                final errorMsg = context.read<CourseState>().error ?? 'Gagal menghapus course';
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(errorMsg), backgroundColor: Colors.red),
+                );
+              }
+            },
+            child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +112,10 @@ class CoursesPage extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _showDeleteDialog(context, course),
               ),
               IconButton(
                 icon: Icon(

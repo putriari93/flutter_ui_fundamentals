@@ -17,8 +17,12 @@ class CourseRepository {
     return await apiService.createCourse(course);
   }
 
-  // TAMBAHAN METHOD UPDATE
   Future<Course> updateCourse(int id, Course course) async {
     return await apiService.updateCourse(id, course);
+  }
+
+  // METHOD DELETE (TAHAP 8)
+  Future<void> deleteCourse(int id) async {
+    await apiService.deleteCourse(id);
   }
 }

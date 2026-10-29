@@ -59,7 +59,6 @@ class CourseState extends ChangeNotifier {
     }
   }
 
-  // PERBAIKAN METHOD EDIT COURSE (HTTP PUT)
   Future<bool> editCourse(int id, Course updatedCourse) async {
     _isSaving = true;
     _error = null;
@@ -67,13 +66,37 @@ class CourseState extends ChangeNotifier {
 
     try {
       await _repository.updateCourse(id, updatedCourse);
-      await loadCourses(); // Refresh data dari server
+      await loadCourses();
       return true;
     } catch (e) {
       _error = e.toString();
       return false;
     } finally {
       _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  // METHOD DELETE (TAHAP 8)
+  Future<bool> removeCourse(Course course) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final targetId = course.id ?? 1;
+      await _repository.deleteCourse(targetId);
+
+      // Hapus dari daftar favorit jika ada
+      _favorites.removeWhere((c) => c.code == course.code || c.id == course.id);
+
+      await loadCourses(); // Refresh daftar course dari server
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
@@ -107,13 +130,5 @@ class CourseState extends ChangeNotifier {
       }
       notifyListeners();
     }
-  }
-
-  Future<bool> removeCourse(String code) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    _courses.removeWhere((c) => c.code == code);
-    _favorites.removeWhere((c) => c.code == code);
-    notifyListeners();
-    return true;
   }
 }

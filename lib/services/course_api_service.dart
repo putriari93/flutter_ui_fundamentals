@@ -31,18 +31,26 @@ class CourseApiService {
     throw Exception('Gagal membuat course: Status ${response.statusCode}');
   }
 
-  // TAMBAHAN METHOD UPDATE (PUT)
   Future<Course> updateCourse(int id, Course course) async {
     final response = await http.put(
       Uri.parse('$baseUrl/posts/$id'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(course.toJson()),
     );
-
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return Course.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
     }
-
     throw Exception('Gagal memperbarui course: Status ${response.statusCode}');
+  }
+
+  // METHOD DELETE (TAHAP 8)
+  Future<void> deleteCourse(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/posts/$id'),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Gagal menghapus course: Status ${response.statusCode}');
+    }
   }
 }
