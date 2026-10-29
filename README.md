@@ -18,8 +18,8 @@ samples, guidance on mobile development, and a full API reference.
 
 # Course Explorer v2 - Flutter UI Fundamentals
 
-**Nama:** Jamilatul Amalia  
-**NIM:** 2415051107  
+**Nama:** Putri Ari Laksmi  
+**NIM:** 2415051091  
 
 ## Arsitektur Aplikasi & Dependency Direction
 

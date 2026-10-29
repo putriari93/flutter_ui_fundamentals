@@ -1,5 +1,5 @@
-// Nama: Jamilatul Amalia
-// NIM: 2415051107
+// Nama: Putri Ari Laksmi
+// NIM: 2415051091
 
 class SupabaseConfig {
   static const String url = 'https://jrafuhxdvepleeretxtx.supabase.co';

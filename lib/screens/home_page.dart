@@ -1,5 +1,5 @@
-// Nama: Jamilatul Amalia
-// NIM: 2415051107
+// Nama: Putri Ari Laksmi
+// NIM: 24150511091
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +31,7 @@ class HomePage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Text(
-                    '2415051107 • Jamilatul Amalia',
+                    '2415051091 • Putri Ari Laksmi',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),

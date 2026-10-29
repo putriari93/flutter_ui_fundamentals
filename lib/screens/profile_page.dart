@@ -1,5 +1,5 @@
-// Nama: Jamilatul Amalia
-// NIM: 2415051107
+// Nama: Putri Ari Laksmi
+// NIM: 24150511091
 
 import 'package:flutter/material.dart';
 
@@ -24,8 +24,8 @@ class ProfilePage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
-            Text('Nama: Jamilatul Amalia'),
-            Text('NIM: 2415051107'),
+            Text('Nama: Putri Ari Laksmi'),
+            Text('NIM: 2415051091'),
           ],
         ),
       ),

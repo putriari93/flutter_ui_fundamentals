@@ -1,7 +1,7 @@
 {
   "student": {
-    "nim": "2415051107",
-    "name": "Jamilatul Amalia"
+    "nim": "2415051091",
+    "name": "Putri Ari Laksmi"
   },
   "courses": [
     {"code": "MOB01", "title": "Git & GitHub", "credits": 2, "status": "done"},
