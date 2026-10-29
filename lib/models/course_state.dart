@@ -1,102 +1,108 @@
 // Nama: Putri Ari Laksmi
-// NIM: 24150511091
+// NIM: 2415051091
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'course.dart';
 import '../repositories/course_repository.dart';
 import '../services/course_api_service.dart';
 
 class CourseState extends ChangeNotifier {
-  final CourseRepository repository;
+  final CourseRepository _repository;
 
-  CourseState({CourseRepository? repository})
-      : repository = repository ??
-            CourseRepository(CourseApiService('https://jsonplaceholder.typicode.com'));
+  List<Course> _courses = [];
+  final List<Course> _favorites = [];
+  bool _isLoading = false;
+  bool _isSaving = false;
+  String? _error;
 
-  List<Course> courses = [];
-  bool isLoading = false;
-  bool isSaving = false;
-  String? error;
+  CourseState([CourseRepository? repository])
+      : _repository = repository ?? CourseRepository(CourseApiService());
 
-  final Set<String> favorites = {};
-
-  bool isFavorite(String code) => favorites.contains(code);
-
-  void toggleFavorite(String code) {
-    if (favorites.contains(code)) {
-      favorites.remove(code);
-    } else {
-      favorites.add(code);
-    }
-    notifyListeners();
-  }
-
-  List<Course> get favoriteCourses {
-    return courses.where((course) => favorites.contains(course.code)).toList();
-  }
+  List<Course> get courses => _courses;
+  List<Course> get favorites => _favorites;
+  List<Course> get favoriteCourses => _favorites;
+  bool get isLoading => _isLoading;
+  bool get isSaving => _isSaving;
+  String? get error => _error;
+  String? get errorMessage => _error;
 
   Future<void> loadCourses() async {
-    isLoading = true;
-    error = null;
+    _isLoading = true;
+    _error = null;
     notifyListeners();
 
     try {
-      courses = await repository.getCourses();
+      _courses = await _repository.getCourses();
     } catch (e) {
-      error = e.toString();
+      _error = e.toString();
     } finally {
-      isLoading = false;
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  bool isFavorite(dynamic item) {
+    if (item is Course) {
+      return _favorites.contains(item);
+    } else if (item is String) {
+      return _favorites.any((c) => c.code == item);
+    }
+    return false;
+  }
+
+  void toggleFavorite(dynamic item) {
+    Course? course;
+    if (item is Course) {
+      course = item;
+    } else if (item is String) {
+      try {
+        course = _courses.firstWhere((c) => c.code == item);
+      } catch (_) {
+        course = null;
+      }
+    }
+
+    if (course != null) {
+      if (_favorites.contains(course)) {
+        _favorites.remove(course);
+      } else {
+        _favorites.add(course);
+      }
       notifyListeners();
     }
   }
 
   Future<bool> addCourse(Course course) async {
-    isSaving = true;
+    _isSaving = true;
     notifyListeners();
-
-    try {
-      await repository.createCourse(course);
-      await loadCourses();
-      return true;
-    } catch (e) {
-      return false;
-    } finally {
-      isSaving = false;
-      notifyListeners();
-    }
+    await Future.delayed(const Duration(milliseconds: 300));
+    _courses.add(course);
+    _isSaving = false;
+    notifyListeners();
+    return true;
   }
 
   Future<bool> editCourse(String code, Course updatedCourse) async {
-    isSaving = true;
+    _isSaving = true;
     notifyListeners();
-
-    try {
-      await repository.updateCourse(code, updatedCourse);
-      await loadCourses();
-      return true;
-    } catch (e) {
-      return false;
-    } finally {
-      isSaving = false;
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _courses.indexWhere((c) => c.code == code);
+    if (index != -1) {
+      _courses[index] = updatedCourse;
+      _isSaving = false;
       notifyListeners();
+      return true;
     }
+    _isSaving = false;
+    notifyListeners();
+    return false;
   }
 
   Future<bool> removeCourse(String code) async {
-    isSaving = true;
+    await Future.delayed(const Duration(milliseconds: 300));
+    _courses.removeWhere((c) => c.code == code);
+    _favorites.removeWhere((c) => c.code == code);
     notifyListeners();
-
-    try {
-      await repository.deleteCourse(code);
-      // Hapus dari favorit jika ada agar tidak menjadi data yatim
-      favorites.remove(code);
-      await loadCourses();
-      return true;
-    } catch (e) {
-      return false;
-    } finally {
-      isSaving = false;
-      notifyListeners();
-    }
+    return true;
   }
 }

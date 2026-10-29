@@ -1,22 +1,25 @@
+// Nama: Putri Ari Laksmi
+// NIM: 2415051091
+
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import '../models/course.dart';
 
 class CourseApiService {
-  // 1. Konstanta apiUrl
-  static const String apiUrl = 'https://jsonplaceholder.typicode.com/posts';
+  final String baseUrl;
 
-  // 2. Function asynchronous HTTP GET
-  Future<List<dynamic>> fetchCourses() async {
-    final response = await http.get(Uri.parse(apiUrl));
+  CourseApiService([this.baseUrl = 'https://jsonplaceholder.typicode.com']);
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
-      // 3. Tampilkan jumlah item pada debugPrint
-      debugPrint('Berhasil memuat data. Jumlah item: ${data.length}');
-      return data;
-    } else {
-      throw Exception('Gagal memuat data. HTTP Status: ${response.statusCode}');
+  Future<List<Course>> getCourses() async {
+    final response = await http.get(Uri.parse('$baseUrl/posts'));
+
+    if (response.statusCode != 200) {
+      throw Exception('Gagal mengambil course: ${response.statusCode}');
     }
+
+    final List data = jsonDecode(response.body) as List;
+    return data
+        .map((e) => Course.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }
