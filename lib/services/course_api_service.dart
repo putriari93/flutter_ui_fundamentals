@@ -1,72 +1,22 @@
-// Nama: Putri Ari Laksmi
-// NIM: 24150511091
-
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../models/course.dart';
-import 'course_data_source.dart';
 
-class CourseApiService implements CourseDataSource {
-  CourseApiService(this.baseUrl);
+class CourseApiService {
+  // 1. Konstanta apiUrl
+  static const String apiUrl = 'https://jsonplaceholder.typicode.com/posts_salah';
 
-  final String baseUrl;
+  // 2. Function asynchronous HTTP GET
+  Future<List<dynamic>> fetchCourses() async {
+    final response = await http.get(Uri.parse(apiUrl));
 
-  @override
-  Future<List<Course>> getCourses() async {
-    final response = await http.get(Uri.parse('$baseUrl/posts'));
-
-    if (response.statusCode != 200) {
-      throw Exception('Gagal mengambil course');
-    }
-
-    final List data = jsonDecode(response.body) as List;
-    return data
-        .map((e) => Course.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
-
-  @override
-  Future<Course> createCourse(Course course) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/posts'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(course.toJson()),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Course.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>,
-      );
-    }
-
-    throw Exception('Gagal membuat course');
-  }
-
-  @override
-  Future<Course> updateCourse(String code, Course course) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/posts/1'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(course.toJson()),
-    );
-
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Gagal memperbarui course');
-    }
-
-    return Course.fromJson(
-      jsonDecode(response.body) as Map<String, dynamic>,
-    );
-  }
-
-  @override
-  Future<void> deleteCourse(String code) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/posts/1'),
-    );
-
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Gagal menghapus course');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
+      // 3. Tampilkan jumlah item pada debugPrint
+      debugPrint('Berhasil memuat data. Jumlah item: ${data.length}');
+      return data;
+    } else {
+      throw Exception('Gagal memuat data. HTTP Status: ${response.statusCode}');
     }
   }
 }
