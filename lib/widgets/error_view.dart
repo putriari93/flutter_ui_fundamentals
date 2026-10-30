@@ -21,11 +21,18 @@ class ErrorView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 60, color: Colors.red),
+            const Icon(
+              Icons.error_outline_rounded,
+              color: Colors.redAccent,
+              size: 64,
+            ),
             const SizedBox(height: 16),
-            Text(
-              'Terjadi Kesalahan',
-              style: Theme.of(context).textTheme.titleLarge,
+            const Text(
+              'Gagal Memuat Data',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
@@ -33,11 +40,11 @@ class ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.grey),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Coba Lagi (Retry)'),
+              label: const Text('Coba Lagi'),
             ),
           ],
         ),

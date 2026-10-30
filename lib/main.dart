@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
 import 'models/course_state.dart';
 import 'repositories/course_repository.dart';
+import 'services/course_data_source.dart';
 import 'services/course_supabase_service.dart';
 import 'widgets/responsive_shell.dart';
 
@@ -19,12 +20,12 @@ Future<void> main() async {
     anonKey: SupabaseConfig.anonKey,
   );
 
-  final supabaseService = CourseSupabaseService();
-  final repository = CourseRepository(supabaseService);
+  // Switch Data Source secara modular (Supabase / REST API)
+  final CourseDataSource dataSource = CourseSupabaseService();
+  final repository = CourseRepository(dataSource);
 
   runApp(
     ChangeNotifierProvider(
-      // PENTING: Tambahkan ..loadCourses() agar data otomatis di-fetch saat app jalan
       create: (_) => CourseState(repository)..loadCourses(),
       child: const MyApp(),
     ),
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Course Explorer v2',
+      title: 'Course Data Manager',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

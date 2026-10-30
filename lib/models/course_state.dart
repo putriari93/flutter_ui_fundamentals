@@ -16,7 +16,7 @@ class CourseState extends ChangeNotifier {
 
   CourseState(this.repository);
 
-  // Read: Fetch data dari repository
+  // Read: Fetch data dari backend
   Future<void> loadCourses() async {
     isLoading = true;
     error = null;
@@ -94,7 +94,7 @@ class CourseState extends ChangeNotifier {
     }
   }
 
-  // Favorites Management
+  // Favorit Management
   void toggleFavorite(dynamic target) {
     final String code = target is Course ? target.code : target.toString();
     if (favorites.contains(code)) {
