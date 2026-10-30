@@ -14,18 +14,17 @@ import 'widgets/responsive_shell.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inisialisasi Supabase Client
   await Supabase.initialize(
     url: SupabaseConfig.url,
     anonKey: SupabaseConfig.anonKey,
   );
 
-  // Menggunakan CourseSupabaseService sebagai data source
   final supabaseService = CourseSupabaseService();
   final repository = CourseRepository(supabaseService);
 
   runApp(
     ChangeNotifierProvider(
+      // PENTING: Tambahkan ..loadCourses() agar data otomatis di-fetch saat app jalan
       create: (_) => CourseState(repository)..loadCourses(),
       child: const MyApp(),
     ),

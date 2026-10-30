@@ -21,7 +21,7 @@ class CourseSupabaseService implements CourseDataSource {
           .map((e) => Course.fromJson(e as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      debugPrint('=== ERROR SUPABASE GET: $e ===');
+      debugPrint('=== ERROR FETCH SUPABASE: $e ===');
       rethrow;
     }
   }
@@ -37,7 +37,7 @@ class CourseSupabaseService implements CourseDataSource {
 
       return Course.fromJson(row);
     } catch (e) {
-      debugPrint('=== ERROR SUPABASE INSERT: $e ===');
+      debugPrint('=== ERROR INSERT SUPABASE: $e ===');
       rethrow;
     }
   }
@@ -54,11 +54,21 @@ class CourseSupabaseService implements CourseDataSource {
 
       return Course.fromJson(row);
     } catch (e) {
-      debugPrint('=== ERROR SUPABASE UPDATE: $e ===');
+      debugPrint('=== ERROR UPDATE SUPABASE: $e ===');
       rethrow;
     }
   }
 
   @override
-  Future<void> deleteCourse(int id) => throw UnimplementedError();
+  Future<void> deleteCourse(int id) async {
+    try {
+      await supabase
+          .from('courses')
+          .delete()
+          .eq('id', id);
+    } catch (e) {
+      debugPrint('=== ERROR DELETE SUPABASE: $e ===');
+      rethrow;
+    }
+  }
 }
