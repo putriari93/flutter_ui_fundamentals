@@ -1,6 +1,7 @@
 // Nama: Putri Ari Laksmi
 // NIM: 2415051091
 
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/course.dart';
 import 'course_data_source.dart';
@@ -10,19 +11,36 @@ class CourseSupabaseService implements CourseDataSource {
 
   @override
   Future<List<Course>> getCourses() async {
-    final data = await supabase
-        .from('courses')
-        .select()
-        .order('id');
+    try {
+      final data = await supabase
+          .from('courses')
+          .select()
+          .order('id');
 
-    return (data as List)
-        .map((e) => Course.fromJson(e as Map<String, dynamic>))
-        .toList();
+      return (data as List)
+          .map((e) => Course.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('=== ERROR SUPABASE GET: $e ===');
+      rethrow;
+    }
   }
 
-  // Metode mutasi disiapkan sementara agar kelas dapat dikompilasi
   @override
-  Future<Course> createCourse(Course course) => throw UnimplementedError();
+  Future<Course> createCourse(Course course) async {
+    try {
+      final row = await supabase
+          .from('courses')
+          .insert(course.toJson())
+          .select()
+          .single();
+
+      return Course.fromJson(row);
+    } catch (e) {
+      debugPrint('=== ERROR SUPABASE INSERT: $e ===');
+      rethrow;
+    }
+  }
 
   @override
   Future<Course> updateCourse(int id, Course course) => throw UnimplementedError();

@@ -1,134 +1,115 @@
 // Nama: Putri Ari Laksmi
 // NIM: 2415051091
 
-import 'package:flutter/foundation.dart';
-import 'course.dart';
+import 'package:flutter/material.dart';
 import '../repositories/course_repository.dart';
-import '../services/course_api_service.dart';
+import 'course.dart';
 
 class CourseState extends ChangeNotifier {
-  final CourseRepository _repository;
+  final CourseRepository repository;
 
-  List<Course> _courses = [];
-  final List<Course> _favorites = [];
-  bool _isLoading = false;
-  bool _isSaving = false;
-  String? _error;
+  List<Course> courses = [];
+  Set<String> favorites = {};
+  bool isLoading = false;
+  bool isSaving = false;
+  String? error;
 
-  CourseState([CourseRepository? repository])
-      : _repository = repository ?? CourseRepository(CourseApiService());
+  CourseState(this.repository);
 
-  List<Course> get courses => _courses;
-  List<Course> get favorites => _favorites;
-  List<Course> get favoriteCourses => _favorites;
-  bool get isLoading => _isLoading;
-  bool get isSaving => _isSaving;
-  String? get error => _error;
-  String? get errorMessage => _error;
-
+  // Read: Mengambil daftar courses
   Future<void> loadCourses() async {
-    _isLoading = true;
-    _error = null;
+    isLoading = true;
+    error = null;
     notifyListeners();
 
     try {
-      _courses = await _repository.getCourses();
+      courses = await repository.getCourses();
     } catch (e) {
-      _error = e.toString();
+      error = e.toString();
     } finally {
-      _isLoading = false;
+      isLoading = false;
       notifyListeners();
     }
   }
 
+  // Create: Menambah course
   Future<bool> addCourse(Course course) async {
-    _isSaving = true;
-    _error = null;
+    isSaving = true;
+    error = null;
     notifyListeners();
 
     try {
-      await _repository.createCourse(course);
-      await loadCourses();
+      final newCourse = await repository.createCourse(course);
+      courses.add(newCourse);
       return true;
     } catch (e) {
-      _error = e.toString();
+      error = e.toString();
       return false;
     } finally {
-      _isSaving = false;
+      isSaving = false;
       notifyListeners();
     }
   }
 
-  Future<bool> editCourse(int id, Course updatedCourse) async {
-    _isSaving = true;
-    _error = null;
+  // Update: Mengedit course
+  Future<bool> editCourse(int id, Course course) async {
+    isSaving = true;
+    error = null;
     notifyListeners();
 
     try {
-      await _repository.updateCourse(id, updatedCourse);
-      await loadCourses();
+      final updated = await repository.updateCourse(id, course);
+      final index = courses.indexWhere((element) => element.id == id);
+      if (index != -1) {
+        courses[index] = updated;
+      }
       return true;
     } catch (e) {
-      _error = e.toString();
+      error = e.toString();
       return false;
     } finally {
-      _isSaving = false;
+      isSaving = false;
       notifyListeners();
     }
   }
 
-  // METHOD DELETE (TAHAP 8)
+  // Delete: Menghapus course
   Future<bool> removeCourse(Course course) async {
-    _isLoading = true;
-    _error = null;
+    isSaving = true;
+    error = null;
     notifyListeners();
 
     try {
-      final targetId = course.id ?? 1;
-      await _repository.deleteCourse(targetId);
-
-      // Hapus dari daftar favorit jika ada
-      _favorites.removeWhere((c) => c.code == course.code || c.id == course.id);
-
-      await loadCourses(); // Refresh daftar course dari server
+      await repository.deleteCourse(course.id);
+      courses.removeWhere((element) => element.id == course.id);
+      favorites.remove(course.code);
       return true;
     } catch (e) {
-      _error = e.toString();
+      error = e.toString();
       return false;
     } finally {
-      _isLoading = false;
+      isSaving = false;
       notifyListeners();
     }
   }
 
-  bool isFavorite(dynamic item) {
-    if (item is Course) {
-      return _favorites.contains(item);
-    } else if (item is String) {
-      return _favorites.any((c) => c.code == item);
+  // Favorit Management
+  void toggleFavorite(dynamic target) {
+    final String code = target is Course ? target.code : target.toString();
+    if (favorites.contains(code)) {
+      favorites.remove(code);
+    } else {
+      favorites.add(code);
     }
-    return false;
+    notifyListeners();
   }
 
-  void toggleFavorite(dynamic item) {
-    Course? course;
-    if (item is Course) {
-      course = item;
-    } else if (item is String) {
-      try {
-        course = _courses.firstWhere((c) => c.code == item);
-      } catch (_) {
-        course = null;
-      }
-    }
+  bool isFavorite(dynamic target) {
+    final String code = target is Course ? target.code : target.toString();
+    return favorites.contains(code);
+  }
 
-    if (course != null) {
-      if (_favorites.contains(course)) {
-        _favorites.remove(course);
-      } else {
-        _favorites.add(course);
-      }
-      notifyListeners();
-    }
+  List<Course> get favoriteCourses {
+    return courses.where((c) => favorites.contains(c.code)).toList();
   }
 }

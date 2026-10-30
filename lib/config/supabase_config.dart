@@ -2,6 +2,6 @@
 // NIM: 2415051091
 
 class SupabaseConfig {
-  static const String url = 'YOUR_SUPABASE_PROJECT_URL';
-  static const String anonKey = 'YOUR_SUPABASE_ANON_KEY';
+  static const String url = 'https://cqivqiyhswuhgutyyyzo.supabase.co';
+  static const String anonKey = 'cqivqiyhswuhgutyyyzo';
 }

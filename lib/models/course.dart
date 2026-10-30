@@ -2,35 +2,41 @@
 // NIM: 2415051091
 
 class Course {
-  final int? id;
+  final int id;
   final String code;
   final String title;
   final int credits;
   final String status;
 
-  const Course({
-    this.id,
+  Course({
+    this.id = 0,
     required this.code,
     required this.title,
     required this.credits,
-    this.status = 'planned',
+    required this.status,
   });
 
   factory Course.fromJson(Map<String, dynamic> json) {
     return Course(
-      id: json['id'] as int?,
-      code: (json['code'] as String?) ?? 'COURSE-${json['id']}',
-      title: (json['title'] as String?) ?? '',
-      credits: (json['credits'] as int?) ?? 3,
-      status: (json['status'] as String?) ?? 'planned',
+      id: json['id'] is int
+          ? json['id'] as int
+          : int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      code: json['code']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      credits: json['credits'] is int
+          ? json['credits'] as int
+          : int.tryParse(json['credits']?.toString() ?? '') ?? 0,
+      status: json['status']?.toString() ?? 'planned',
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        if (id != null) 'id': id,
-        'code': code,
-        'title': title,
-        'credits': credits,
-        'status': status,
-      };
+  Map<String, dynamic> toJson() {
+    return {
+      if (id != 0) 'id': id,
+      'code': code,
+      'title': title,
+      'credits': credits,
+      'status': status,
+    };
+  }
 }
