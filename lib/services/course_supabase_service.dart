@@ -1,9 +1,9 @@
 // Nama: Putri Ari Laksmi
-// NIM: 24150511091
+// NIM: 2415051091
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_ui_fundamentals/models/course.dart';
-import 'package:flutter_ui_fundamentals/services/course_data_source.dart';
+import '../models/course.dart';
+import 'course_data_source.dart';
 
 class CourseSupabaseService implements CourseDataSource {
   final supabase = Supabase.instance.client;
@@ -20,27 +20,13 @@ class CourseSupabaseService implements CourseDataSource {
         .toList();
   }
 
+  // Metode mutasi disiapkan sementara agar kelas dapat dikompilasi
   @override
-  Future<Course> createCourse(Course course) async {
-    final Map<String, dynamic> payload = {
-      'code': course.code.toUpperCase(),
-      'title': course.title,
-      'credits': course.credits,
-      'status': course.status.toLowerCase(),
-    };
-
-    final row = await supabase
-        .from('courses')
-        .insert(payload)
-        .select()
-        .single();
-
-    return Course.fromJson(row);
-  }
+  Future<Course> createCourse(Course course) => throw UnimplementedError();
 
   @override
-  Future<Course> updateCourse(String id, Course course) => throw UnimplementedError();
+  Future<Course> updateCourse(int id, Course course) => throw UnimplementedError();
 
   @override
-  Future<void> deleteCourse(String id) => throw UnimplementedError();
+  Future<void> deleteCourse(int id) => throw UnimplementedError();
 }

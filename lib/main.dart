@@ -8,7 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
 import 'models/course_state.dart';
 import 'repositories/course_repository.dart';
-import 'services/course_api_service.dart';
+import 'services/course_supabase_service.dart';
 import 'widgets/responsive_shell.dart';
 
 Future<void> main() async {
@@ -20,9 +20,9 @@ Future<void> main() async {
     anonKey: SupabaseConfig.anonKey,
   );
 
-  // Perakitan Service -> Repository -> Provider
-  final apiService = CourseApiService('https://jsonplaceholder.typicode.com');
-  final repository = CourseRepository(apiService);
+  // Menggunakan CourseSupabaseService sebagai data source
+  final supabaseService = CourseSupabaseService();
+  final repository = CourseRepository(supabaseService);
 
   runApp(
     ChangeNotifierProvider(
